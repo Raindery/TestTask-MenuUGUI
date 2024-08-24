@@ -39,6 +39,7 @@ public class ColorsSublistItem : MenuList
                     .SetEase(Ease.Linear)
                     .Play();
                 _loadImage.gameObject.SetActive(true);
+                Button.interactable = false;
                 var colors = await _pseudoApi.GetColors();
 
                 for (int i = 0; i < colors.ColorArray.Count; i++)
@@ -63,6 +64,8 @@ public class ColorsSublistItem : MenuList
                 if(loadTween.IsActive())
                     loadTween.Kill();
                 _arrowImage.gameObject.SetActive(true);
+                _loadImage.transform.rotation = Quaternion.identity;
+                Button.interactable = true;
             }
         }
         

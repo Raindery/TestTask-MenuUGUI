@@ -32,6 +32,7 @@ public class TextsSublistItem : MenuList
             Tween loadTween = null;
             try
             {
+                Button.interactable = false;
                 _arrowImage.gameObject.SetActive(false);
                 loadTween = _loadImage.transform
                     .DORotate(Vector3.forward * 360, 1f, RotateMode.FastBeyond360)
@@ -60,7 +61,9 @@ public class TextsSublistItem : MenuList
                 _loadImage.gameObject.SetActive(false);
                 if(loadTween.IsActive())
                     loadTween.Kill();
+                _loadImage.transform.rotation = Quaternion.identity;
                 _arrowImage.gameObject.SetActive(true);
+                Button.interactable = true;
             }
         }
         
