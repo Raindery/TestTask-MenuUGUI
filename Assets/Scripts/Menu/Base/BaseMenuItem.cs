@@ -12,12 +12,12 @@ public abstract class BaseMenuItem : MonoBehaviour
     public Button Button => _button;
 
     
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         _button.onClick.AddListener(OnClick);
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         _button.onClick.RemoveListener(OnClick);
     }

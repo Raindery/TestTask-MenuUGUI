@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class MenuList : BaseMenuItem
 {
     [SerializeField] private CanvasGroup _parentForElements;
     [SerializeField] private List<BaseMenuItem> _childrenElements = new List<BaseMenuItem>();
     
+    
     private Sequence _cachedExpandSequence;
 
+    public event Action<bool> ExpandToggled;
     public CanvasGroup ParentForElements => _parentForElements;
     public List<BaseMenuItem> ChildrenElements => _childrenElements; 
     public bool IsExpanded { get; protected set; }
@@ -26,19 +30,15 @@ public abstract class MenuList : BaseMenuItem
                 ParentForElements.gameObject.SetActive(IsExpanded);
             });           
             sequence.Append(ParentForElements.transform.DOScaleY(1f, 0.25f));
-            for (int i = 0; i < _childrenElements.Count; i++)
-            {
-                var rootMenuItem = _childrenElements[i];
-            
-                rootMenuItem.transform.localScale = new Vector3(0, 1);
-                rootMenuItem.gameObject.SetActive(true);
-                if (i == 0)
-                    sequence.Append(rootMenuItem.transform.DOScaleX(1f, 0.3f));
-                else
-                    sequence.Join(rootMenuItem.transform.DOScaleX(1f, 0.3f));
-            }
+            sequence.AppendCallback(() => { ParentForElements.interactable = IsExpanded; });
 
+            if (transform is RectTransform rectTransform)
+            {
+                sequence.OnUpdate(() =>
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform));
+            }
             _cachedExpandSequence = sequence;
+            
         }
 
         if (IsExpanded)
@@ -57,9 +57,10 @@ public abstract class MenuList : BaseMenuItem
         }
 
         IsExpanded = !IsExpanded;
+        ExpandToggled?.Invoke(IsExpanded);
     }
 
-    protected override async void OnClick()
+    protected sealed override async void OnClick()
     {
         bool isListItemsLoaded;
         if (!_childrenElements.Any())

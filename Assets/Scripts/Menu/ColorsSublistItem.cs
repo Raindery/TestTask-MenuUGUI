@@ -22,8 +22,36 @@ public class ColorsSublistItem : MenuList
         _errorHandlingService = errorHandlingService;
         _diContainer = diContainer;
     }
+
     
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        ExpandToggled += OnExpandToggled;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        ExpandToggled -= OnExpandToggled;
+
+    }
+
     
+    private void OnExpandToggled(bool isExpanded)
+    {
+        Vector3 rotateValue;
+        if (isExpanded)
+            rotateValue = Vector3.back * 180f;
+        else
+            rotateValue = Vector3.zero;
+
+        _arrowImage.transform
+            .DORotate(rotateValue, 0.25f, RotateMode.FastBeyond360)
+            .SetAutoKill(true)
+            .Play();
+    }
+
     protected override async UniTask<bool> TryLoadListItems()
     {
         Tween loadTween = null;
