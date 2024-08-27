@@ -6,7 +6,7 @@ public class TextMenuButton : MenuButton
     private IErrorHandlingService _errorHandlingService;
     private string _textValue;
 
-        
+    
     [Inject]
     private void Construct(ScreenText screenText, IErrorHandlingService errorHandlingService)
     {
@@ -14,19 +14,8 @@ public class TextMenuButton : MenuButton
         _errorHandlingService = errorHandlingService;
     }
 
-
-    private void OnEnable()
-    {
-        Button.onClick.AddListener(OnClick);
-    }
-
-    private void OnDisable()
-    {
-        Button.onClick.RemoveListener(OnClick);
-    }
-        
-
-    private void OnClick()
+    
+    protected override void OnClick()
     {
         try
         {

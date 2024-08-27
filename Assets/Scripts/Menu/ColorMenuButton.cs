@@ -5,7 +5,7 @@ public class ColorMenuButton : MenuButton
     private ScreenText _screenText;
     private IErrorHandlingService _errorHandlingService;
     private Color _color;
-
+    
     
     [Inject]
     private void Construct(ScreenText screenText, IErrorHandlingService errorHandlingService)
@@ -15,18 +15,7 @@ public class ColorMenuButton : MenuButton
     }
 
 
-    private void OnEnable()
-    {
-        Button.onClick.AddListener(OnClick);
-    }
-
-    private void OnDisable()
-    {
-        Button.onClick.RemoveListener(OnClick);    
-    }
-    
-
-    private void OnClick()
+    protected override void OnClick()
     {
         try
         {

@@ -1,33 +1,75 @@
 ﻿using System.Collections.Generic;
-using TMPro;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class MenuList : BaseMenuItem
 {
-    [SerializeField] private TMP_Text _text;
-    [SerializeField] private Button _button;
     [SerializeField] private CanvasGroup _parentForElements;
-
-    protected readonly List<BaseMenuItem> _childrenElements = new List<BaseMenuItem>();
+    [SerializeField] private List<BaseMenuItem> _childrenElements = new List<BaseMenuItem>();
     
-    public override TMP_Text Text => _text;
-    public override Button Button => _button;
+    private Sequence _cachedExpandSequence;
+
     public CanvasGroup ParentForElements => _parentForElements;
-    public IReadOnlyList<BaseMenuItem> ChildrenElements => _childrenElements; 
+    public List<BaseMenuItem> ChildrenElements => _childrenElements; 
     public bool IsExpanded { get; protected set; }
 
 
-    private void OnEnable()
+    private void ExpandToggle()
     {
-        _button.onClick.AddListener(ExpandToggle);
+        if (!_cachedExpandSequence.IsActive())
+        {
+            var sequence = DOTween.Sequence();
+            sequence.AppendCallback(() =>
+            {
+                ParentForElements.gameObject.SetActive(IsExpanded);
+            });           
+            sequence.Append(ParentForElements.transform.DOScaleY(1f, 0.25f));
+            for (int i = 0; i < _childrenElements.Count; i++)
+            {
+                var rootMenuItem = _childrenElements[i];
+            
+                rootMenuItem.transform.localScale = new Vector3(0, 1);
+                rootMenuItem.gameObject.SetActive(true);
+                if (i == 0)
+                    sequence.Append(rootMenuItem.transform.DOScaleX(1f, 0.3f));
+                else
+                    sequence.Join(rootMenuItem.transform.DOScaleX(1f, 0.3f));
+            }
+
+            _cachedExpandSequence = sequence;
+        }
+
+        if (IsExpanded)
+        {
+            var expandableChildrenElements = ChildrenElements.OfType<MenuList>();
+            foreach (var expandableChildrenElement in expandableChildrenElements)
+            {
+                if (expandableChildrenElement.IsExpanded)
+                    expandableChildrenElement.ExpandToggle();
+            }
+            _cachedExpandSequence.PlayBackwards();
+        }
+        else
+        {
+            _cachedExpandSequence.PlayForward();
+        }
+
+        IsExpanded = !IsExpanded;
     }
 
-    private void OnDisable()
+    protected override async void OnClick()
     {
-        _button.onClick.RemoveListener(ExpandToggle);
+        bool isListItemsLoaded;
+        if (!_childrenElements.Any())
+            isListItemsLoaded = await TryLoadListItems();
+        else
+            isListItemsLoaded = true;
+        
+        if(isListItemsLoaded)
+            ExpandToggle();
     }
 
-
-    public abstract void ExpandToggle();
+    protected abstract UniTask<bool> TryLoadListItems();
 }

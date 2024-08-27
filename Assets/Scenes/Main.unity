@@ -482,6 +482,7 @@ MonoBehaviour:
   _text: {fileID: 1498516772}
   _button: {fileID: 420501524}
   _parentForElements: {fileID: 1067135795}
+  _childrenElements: []
   _menuItemPrefab: {fileID: 5570781896591806353, guid: 6943c2b15e3c2004b8ed6ed9ff1acfdd, type: 3}
   _arrowImage: {fileID: 2012971478}
   _loadImage: {fileID: 909732808}
@@ -848,7 +849,7 @@ MonoBehaviour:
   _text: {fileID: 0}
   _button: {fileID: 662105708}
   _parentForElements: {fileID: 786099969}
-  _rootMenuItems:
+  _childrenElements:
   - {fileID: 1130712256}
   - {fileID: 420501527}
 --- !u!1 &786099965
@@ -1592,6 +1593,7 @@ MonoBehaviour:
   _text: {fileID: 1945817737}
   _button: {fileID: 1130712253}
   _parentForElements: {fileID: 1429258889}
+  _childrenElements: []
   _menuItemPrefab: {fileID: 8730175590832044539, guid: c8fba73e71d61f840baeb007942de0b1, type: 3}
   _arrowImage: {fileID: 1745863863}
   _loadImage: {fileID: 494363831}
